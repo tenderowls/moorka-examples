@@ -7,6 +7,7 @@ scalaVersion := currentScalaVersion
 
 val commonSettings = Seq(
   scalaVersion := currentScalaVersion,
+  resolvers += Resolver.url("Moorka", url("http://dl.bintray.com/tenderowls/moorka"))(Resolver.ivyStylePatterns),
   version := "0.1.0",
   organization := "com.tenderowls.opensource",
   libraryDependencies ++= Seq(
