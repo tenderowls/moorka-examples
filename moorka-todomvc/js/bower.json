@@ -1,0 +1,17 @@
+{
+  "name": "moorka-todomvc",
+  "version": "0.2.0",
+  "authors": [
+    "Aleksey Fomkin <fomkin@tenderowls.com>"
+  ],
+  "dependencies": {
+    "moorka": "0.2.0"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

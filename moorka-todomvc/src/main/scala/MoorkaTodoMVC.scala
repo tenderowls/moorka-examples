@@ -35,7 +35,7 @@ object MoorkaTodoMVC extends Application {
             case (x, Active) => x.status == Completed
           },
           div(`className` := "view",
-            `double-click` listen {
+            on.`double-click` listen {
               val todo = state()
               if (todo.status == Active && !nowEditing()) {
                 todos.updateElement(todo, todo.copy(status = Editing))
@@ -46,7 +46,7 @@ object MoorkaTodoMVC extends Application {
               `className` := "toggle",
               `type` := "checkbox",
               `style` := "cursor: pointer",
-              `click` listen {
+              on.click listen {
                 val todo = state()
                 val newStatus = todo.status match {
                   case Active => Completed
@@ -61,13 +61,13 @@ object MoorkaTodoMVC extends Application {
             button(
               `className` := "destroy",
               `style` := "cursor: pointer",
-              `click` listen {
+              on.click listen {
                 todos -= state()
               }
             )
           ),
           form(
-            `submit` listen {
+            on.submit listen {
               val todo = state()
               todos.updateElement(todo, Todo(txt = fieldText(), status = Active))
               nowEditing() = false
@@ -95,7 +95,7 @@ object MoorkaTodoMVC extends Application {
                   `autofocus` := true,
                   `value` =:= inputText
                 ),
-                `submit` listen {
+                on.submit listen {
                   val s = inputText().trim()
                   if (s != "") {
                     todos += Todo(s, Active)
@@ -112,7 +112,7 @@ object MoorkaTodoMVC extends Application {
             `type` := "checkbox",
             `style` := "cursor: pointer",
             `checked` := Bind { todos.length() > 0 && numCompleted() == todos.length() },
-            `click` subscribe { event =>
+            on.click subscribe { event =>
               `checked` from event.target onSuccess {
                 case true =>
                   todos.updateAll(_.copy(status = Completed))
@@ -138,7 +138,7 @@ object MoorkaTodoMVC extends Application {
                 li(
                   a(`href`:="#",
                     useClassName("selected") := Bind { filter() == x },
-                    `click` listen {
+                    on.click listen {
                       filter() = x
                     },
                     x match {
@@ -153,7 +153,7 @@ object MoorkaTodoMVC extends Application {
             button(
               `className` := "clear-completed",
               `show` := Bind { numCompleted() > 0 },
-              `click` listen {
+              on.click listen {
                 todos.remove(_.status != Completed)
               },
               Bind {
