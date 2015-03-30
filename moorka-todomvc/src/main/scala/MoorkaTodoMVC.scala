@@ -2,10 +2,14 @@
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.runNow
 
 import moorka.rx._
+import moorka.ui._
 import moorka.ui.components.html._
 import moorka.ui.components.base._
+import scala.scalajs.js
+import js.Dynamic.global
 
 object MoorkaTodoMVC extends Application {
+  println("MoorkaTodoMVC constructed")
   def start() = {
     // Inject Data
     val todos = Buffer.fromSeq(
@@ -22,8 +26,8 @@ object MoorkaTodoMVC extends Application {
     val filter = Var[Filter](All)
     // Internal component. It has own state but depends on
     // display state of main component
-    case class TodoComponent(state: State[Todo]) extends Component[Todo] {
-      def start() = {
+    class TodoComponent(state: State[Todo]) extends Component {
+      val el = {
         val fieldText = Var("")
         state.observe(fieldText() = state().txt)
         li(
@@ -82,11 +86,7 @@ object MoorkaTodoMVC extends Application {
       section(`className` := "todoapp",
         header(`className` := "header",
           h1("todos"),
-          // Sometimes we need to have isolated display state
-          // for part of the tree. Using new [[Block]] { ... }
-          // In fact we able to move this code to Component
-          new Block {
-            def start() = {
+            block {
               val inputText = Var("")
               form(
                 input(
@@ -104,7 +104,6 @@ object MoorkaTodoMVC extends Application {
                 }
               )
             }
-          }
         ),
         section(`className` := "main",
           input(
@@ -123,9 +122,9 @@ object MoorkaTodoMVC extends Application {
           ),
           label(`for`:= "toggle-all", "Mark all as complete"),
           ul(`className` := "todo-list",
-            Repeat[Todo](
+            DataRepeat[Todo](
               dataProvider = todos,
-              x => TodoComponent(x)
+              x => new TodoComponent(x)
             )
           ),
           footer(`className` := "footer",
@@ -152,14 +151,11 @@ object MoorkaTodoMVC extends Application {
             ),
             button(
               `className` := "clear-completed",
-              `show` := Bind { numCompleted() > 0 },
+              `show` := numCompleted.map(_ > 0),
               on.click listen {
                 todos.remove(_.status != Completed)
               },
-              Bind {
-                val doneString = numCompleted()
-                s"Clear completed ($doneString)"
-              }
+              numCompleted.map(s ⇒ s"Clear completed ($s)")
             )
           )
         )
